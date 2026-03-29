@@ -8,6 +8,23 @@ Patients can book appointments, doctors can manage schedules, and admins can ove
 all clinic operations
 
 
+## Technologies
+
+- Node.js, TypeScript, Express
+- Firebase Firestore and Authentication
+- Jest for testing
+- Swagger/OpenAPI for documentation
+- Joi for validation
+- GitHub for version control and project management
+
+
+## Architechture
+- Routes layer
+- Controllers layer
+- Services layer
+- Repositories layer
+
+
 ## API Endpoints
 
 ### Auth
@@ -53,7 +70,7 @@ NodeMailer will be used for email notifications.
 
 ## Git Workflow
 
-- `main` — production-ready, polished code only
+- `main` — production-ready, polished code only,  "final product" branch
 - `development` — stable ongoing work
 - `feature` — individual features branched from `development`
 
