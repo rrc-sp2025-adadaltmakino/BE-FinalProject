@@ -18,7 +18,7 @@ all clinic operations
 - GitHub for version control and project management
 
 
-## Architechture
+## Architecture
 - Routes layer
 - Controllers layer
 - Services layer
