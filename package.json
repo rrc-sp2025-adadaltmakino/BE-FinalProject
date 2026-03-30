@@ -1,0 +1,33 @@
+{
+  "name": "be-finalproject",
+  "version": "1.0.0",
+  "description": "A RESTful API for managing clinic appointments, doctors, and departments.",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rrc-sp2025-adadaltmakino/BE-FinalProject.git"
+  },
+  "keywords": [],
+  "author": "Amanda Dadalt Makino",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rrc-sp2025-adadaltmakino/BE-FinalProject/issues"
+  },
+  "homepage": "https://github.com/rrc-sp2025-adadaltmakino/BE-FinalProject#readme",
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.6",
+    "express": "^5.2.1"
+  }
+}
