@@ -13,7 +13,8 @@
         "strictFunctionTypes": true, // Ensure stricter checking of function types.
         "strictPropertyInitialization": true, // Ensure class properties are initialized.
         "noImplicitThis": true, // Raise error on 'this' expressions with an implied 'any' type.
-        "alwaysStrict": true // Ensure 'use strict' is always emitted.
+        "alwaysStrict": true, // Ensure 'use strict' is always emitted.
+        "types": ["node", "jest"]
     },
     "include": ["src/**/*", "tests/**/*"], // Include all TypeScript files in the 'src' and 'tests' directories.
     "exclude": ["node_modules", "dist"] // Exclude 'node_modules' and 'dist' directories.
