@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../../../constants/httpConstants"
-//import * as doctorService from "../services/doctorService";
+import * as doctorService from "../services/doctorService";
 import { Doctor } from "../models/doctorModel";
 import { successResponse } from "../models/responseModel";
 
@@ -38,7 +38,7 @@ export const getDoctorById = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { id } = req.params;
+        const id  = String(req.params);
         const doctor: Doctor = await doctorService.getDoctorById(id);
         res.status(HTTP_STATUS.OK).json(
             successResponse(doctor, "Doctor retrieved successfully")
@@ -84,7 +84,7 @@ export const updateDoctor = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { id }  = req.params;
+        const id  = String(req.params);
         const { name, specialty, departmentId, availableDays } = req.body;
         const updatedData = { name, specialty, departmentId, availableDays };
 
@@ -110,7 +110,7 @@ export const deleteDoctor = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { id } = req.params;
+        const id  = String(req.params);
 
         await doctorService.deleteDoctor(id);
         res.status(HTTP_STATUS.OK).json(

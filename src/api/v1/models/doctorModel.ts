@@ -4,6 +4,7 @@
 export interface Doctor {
   id: string;
   name: string;
+  specialty: string;
   departmentId: string;
   availableDays: string[];
   uid: string;
