@@ -1,25 +1,25 @@
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../../../constants/httpConstants"
 //import * as doctorService from "../services/doctorService";
-import { Doctor } from "../models/doctorModel";
+import { Appointment } from "../models/appointmentModel";
 import { successResponse } from "../models/responseModel";
 
 
 /**
- * Manages requests and reponses to retrieve all Doctors
+ * Manages requests and reponses to retrieve all Appointments
  * @param req - The express Request
  * @param res  - The express Response
  * @param next - The express middleware chaining function
  */
-export const getAllDoctors = async (
+export const getAllAppointments = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
-        const doctors: Doctor[] = await doctorService.getAllDoctors();
+        const appointments: Appointment[] = await appointmentService.getAllAppointments();
         res.status(HTTP_STATUS.OK).json(
-            successResponse(doctors, "Doctors successfully retrieved.")
+            successResponse(appointments, "Appointments successfully retrieved.")
         );
     } catch (error: unknown) {
         next(error);
@@ -27,21 +27,21 @@ export const getAllDoctors = async (
 };
 
 /**
- * Retrieves a single doctor by ID
+ * Retrieves a single appointment by ID
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
  */
-export const getDoctorById = async (
+export const getAppointmentById = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
         const { id } = req.params;
-        const doctor: Doctor = await doctorService.getDoctorById(id);
+        const appointment: Appointment = await appointmentService.getAppointmentById(id);
         res.status(HTTP_STATUS.OK).json(
-            successResponse(doctor, "Doctor retrieved successfully")
+            successResponse(appointment, "Appointment retrieved successfully")
         );
     } catch (error: unknown) {
         next(error);
@@ -49,23 +49,24 @@ export const getDoctorById = async (
 };
 
 /**
- * Manages requests, reponses, and validation to create a Doctor in the system
+ * Manages requests, reponses, and validation to create an Appointment in the system
  * @param req - The express Request
  * @param res  - The express Response
  * @param next - The express middleware chaining function
  */
-export const createDoctor = async (
+export const createAppointment = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { name, specialty, departmentId, availableDays, uid } = req.body;
-        const doctorData = { name, specialty, departmentId, availableDays, uid };
+        const { uid } = req.user!
+        const { doctorId, date, notes } = req.body;
+        const appointmentData = { patientId: uid, doctorId, date, notes };
 
-        const newDoctor: Doctor = await doctorService.createDoctor(doctorData);
+        const newAppointment: Appointment = await appointmentService.createAppointment(appointmentData);
         res.status(HTTP_STATUS.CREATED).json(
-            successResponse(newDoctor, "Doctor created successfully")
+            successResponse(newAppointment, "Appointment created successfully")
         );
     } catch (error: unknown) {
         next(error);
@@ -73,7 +74,7 @@ export const createDoctor = async (
 };
 
 /**
- * Manages requests and reponses to update a Doctor's information
+ * Manages requests and reponses to update an Appoinment
  * @param req - The express Request
  * @param res  - The express Response
  * @param next - The express middleware chaining function
@@ -85,13 +86,13 @@ export const updateDoctor = async (
 ): Promise<void> => {
     try {
         const { id }  = req.params;
-        const { name, specialty, departmentId, availableDays } = req.body;
-        const updatedData = { name, specialty, departmentId, availableDays };
+        const { status, notes } = req.body;
+        const updatedData = { status, notes };
 
-        const updatedDoctor: Doctor = await doctorService.updateDoctor(id, updatedData);
+        const updatedAppointment: Appointment = await appointmentService.updateAppointment(id, updatedData);
 
         res.status(HTTP_STATUS.OK).json(
-            successResponse(updatedDoctor, "Doctor information updated successfully")
+            successResponse(updatedAppointment, "Appointment updated successfully")
         );
     } catch (error: unknown) {
         next(error);
@@ -99,22 +100,23 @@ export const updateDoctor = async (
 };
 
 /**
- * Manages requests and reponses to delete a Doctor
+ * Manages requests and reponses to delete an Appointment (cancellation)
  * @param req - The express Request
  * @param res  - The express Response
  * @param next - The express middleware chaining function
  */
-export const deleteDoctor = async (
+export const deleteAppointment = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
         const { id } = req.params;
+        const { uid, role } = req.user!;
 
-        await doctorService.deleteDoctor(id);
+        await appointmentService.deleteAppointment(id, uid, role);
         res.status(HTTP_STATUS.OK).json(
-            successResponse({}, "Doctor successfully deleted from the system")
+            successResponse({}, "Appointment successfully deleted from the system")
         );
     } catch (error: unknown) {
         next(error);

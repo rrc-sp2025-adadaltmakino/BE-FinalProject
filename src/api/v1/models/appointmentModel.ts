@@ -1,7 +1,7 @@
 /**
  * Represents an appointment in the system
  */
-export interface Appoointment {
+export interface Appointment {
   id: string;
   patientId: string;
   doctorId: string;
