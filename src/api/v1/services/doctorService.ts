@@ -82,7 +82,7 @@ export const createDoctor = async (doctorData: {
 /**
  * Updates (replaces) an existing doctor
  * @param id - The ID of the doctor to update
- * @param loanData - The fields to updates 
+ * @param doctorData - The fields to updates 
  * @returns The updated doctor
  * @throws Error if doctor with given ID is not found
  */

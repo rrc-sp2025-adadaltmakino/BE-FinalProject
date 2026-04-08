@@ -57,20 +57,19 @@ export const getAllAppointments = async (
  * @returns The appointment if found
  */
 export const getAppointmentById = async (id: string): Promise<Appointment> => {
-    const snapshot: QuerySnapshot = await getDocuments(COLLECTION);
-    const doc = snapshot.docs.find((d) => d.id === id);
+
+    const doc = await getDocumentById(COLLECTION, id);
 
     if (!doc) {
         throw new Error(`Appointment with ID ${id} not found`);
     }
 
-    const data: DocumentData = doc.data();
-    const appointment: Appointment = {
-        id: doc.id,
+    const data = doc.data();
+    return {
+        id: doc.id, 
         ...data,
+        createdAt: data?.createdAt?.toDate?.() ?? data?.createdAt,
     } as Appointment;
-
-    return structuredClone(appointment);
 };
 
 /**
@@ -82,37 +81,32 @@ export const getAppointmentById = async (id: string): Promise<Appointment> => {
 export const createAppointment = async (appointmentData: {
     patientId: string;
     doctorId: string;
-    date: Date; 
+    date: Date;
     notes?: string;
 }): Promise<Appointment> => {
-    try {
-        // Check for double-booking
-        const conflict = await db
-            .collection(COLLECTION)
-            .where("doctorId", "==", appointmentData.doctorId)
-            .where("date", "==", appointmentData.date)
-            .where("status", "==", "confirmed")
-            .get();
+    // Check for double-booking
+    const conflict = await db
+        .collection(COLLECTION)
+        .where("doctorId", "==", appointmentData.doctorId)
+        .where("date", "==", appointmentData.date)
+        .where("status", "==", "confirmed")
+        .get();
 
-        if (!conflict.empty) {
-            throw new Error("Doctor already has an appointment at this time");
-        }
-
-        const now = new Date();
-        const newAppointmentData = {
-            ...appointmentData,
-            status: "pending" as const,
-            createdAt: now,
-            updatedAt: now,
-        };
-
-        const id = await createDocument<Appointment>(COLLECTION, newAppointmentData);
-        return { id, ...newAppointmentData } as Appointment;
-    } catch (error) {
-        throw error;
+    if (!conflict.empty) {
+        throw new Error("Doctor already has an appointment at this time");
     }
-};
 
+    const now = new Date();
+    const newAppointmentData = {
+        ...appointmentData,
+        status: "pending" as const,
+        createdAt: now,
+        updatedAt: now,
+    };
+
+    const id = await createDocument<Appointment>(COLLECTION, newAppointmentData);
+    return { id, ...newAppointmentData } as Appointment;
+};
 
 /**
  * Updates an existing appointment
@@ -125,25 +119,17 @@ export const updateAppointment = async (
     id: string,
     appointmentData: Pick<Appointment, "status" | "notes">
 ): Promise<Appointment> => {
-    // check if application exists first
     const appointment: Appointment = await getAppointmentById(id);
-    if (!appointment) {
-        throw new Error(`Appointment with ID ${id} not found`);
-    }
 
     const updatedAppointment: Appointment = {
-        ...appointment
+        ...appointment,
     };
 
     if (appointmentData.status !== undefined) updatedAppointment.status = appointmentData.status;
     if (appointmentData.notes !== undefined) updatedAppointment.notes = appointmentData.notes;
 
-    const snapshot: QuerySnapshot = await getDocuments(COLLECTION);
-    const doc = snapshot.docs.find((d) => d.id === id);
-    if (doc) {
-        await updateDocument<Appointment>(COLLECTION, doc.id, updatedAppointment);
-    }
- 
+    await updateDocument<Appointment>(COLLECTION, id, updatedAppointment);
+
     return structuredClone(updatedAppointment);
 };
 
