@@ -8,6 +8,7 @@ import { Appointment } from "../models/appointmentModel";
 import {
     createDocument,
     getDocuments,
+    getDocumentById,
     updateDocument,
     deleteDocument,
 } from "../repositories/firestoreRepository";
@@ -57,14 +58,15 @@ export const getAllAppointments = async (
  */
 export const getAppointmentById = async (id: string): Promise<Appointment> => {
     const snapshot: QuerySnapshot = await getDocuments(COLLECTION);
-    const doc = snapshot.docs.find((d) => d.data().id === id);
+    const doc = snapshot.docs.find((d) => d.id === id);
 
     if (!doc) {
-        throw new Error(`Loan Application with ID ${id} not found`);
+        throw new Error(`Appointment with ID ${id} not found`);
     }
 
     const data: DocumentData = doc.data();
     const appointment: Appointment = {
+        id: doc.id,
         ...data,
     } as Appointment;
 
@@ -134,9 +136,10 @@ export const updateAppointment = async (
     };
 
     if (appointmentData.status !== undefined) updatedAppointment.status = appointmentData.status;
+    if (appointmentData.notes !== undefined) updatedAppointment.notes = appointmentData.notes;
 
     const snapshot: QuerySnapshot = await getDocuments(COLLECTION);
-    const doc = snapshot.docs.find((d) => d.data().id === id);
+    const doc = snapshot.docs.find((d) => d.id === id);
     if (doc) {
         await updateDocument<Appointment>(COLLECTION, doc.id, updatedAppointment);
     }
@@ -157,7 +160,7 @@ export const deleteAppointment = async (id: string): Promise<void> => {
     }
 
     const snapshot: QuerySnapshot = await getDocuments(COLLECTION);
-    const doc = snapshot.docs.find((d) => d.data().id === id);
+    const doc = snapshot.docs.find((d) => d.id === id);
     if (doc) {
         await deleteDocument(COLLECTION, doc.id);
     }
