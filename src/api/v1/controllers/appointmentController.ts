@@ -17,7 +17,9 @@ export const getAllAppointments = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const appointments: Appointment[] = await appointmentService.getAllAppointments();
+        const { uid, role } = res.locals;
+
+        const appointments: Appointment[] = await appointmentService.getAllAppointments(uid, role);
         res.status(HTTP_STATUS.OK).json(
             successResponse(appointments, "Appointments successfully retrieved.")
         );
@@ -111,10 +113,9 @@ export const deleteAppointment = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { id } = req.params;
-        const { uid, role } = res.locals;
+        const id = req.params.id as string;
 
-        await appointmentService.deleteAppointment(id, uid, role);
+        await appointmentService.deleteAppointment(id);
         res.status(HTTP_STATUS.OK).json(
             successResponse({}, "Appointment successfully deleted from the system")
         );

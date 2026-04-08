@@ -20,19 +20,31 @@ const COLLECTION: string = "appointments";
  * Retrieves all appointments from storage
  * @returns Array of all appointments
  */
-export const getAllAppointments = async (): Promise<Appointment[]> => {
+export const getAllAppointments = async (
+    uid: string,
+    role: string
+): Promise<Appointment[]> => {
     try {
-        const snapshot: QuerySnapshot = await getDocuments(COLLECTION);
-        const appointments: Appointment[] = snapshot.docs.map((doc) => {
-            const data: DocumentData = doc.data();
+        let snapshot: QuerySnapshot;
+
+        if (role === "admin") {
+            snapshot = await getDocuments(COLLECTION);
+        } else {
+            const field = role === "doctor" ? "doctorId" : "patientId";
+            snapshot = await db
+                .collection(COLLECTION)
+                .where(field, "==", uid)
+                .get();
+        }
+
+        return snapshot.docs.map((doc) => {
+            const data = doc.data();
             return {
-                id: data.id,
+                id: doc.id,
                 ...data,
-                createdAt: data.createdAt?.toDate?.()?.toISOString() ?? data.createdAt,
+                createdAt: data.createdAt?.toDate?.() ?? data.createdAt,
             } as Appointment;
         });
-
-        return appointments;
     } catch (error: unknown) {
         throw error;
     }
