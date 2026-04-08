@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import morgan from "morgan";
-import doctorRoutes from ".api/v1/routes/doctorRoutes";
+import doctorRoutes from "./api/v1/routes/doctorRoutes";
 import appointmentRoutes from './api/v1/routes/appointmentRoutes';
 import userRoutes from './api/v1/routes/userRoutes';
 import adminRoutes from './api/v1/routes/adminRoutes';
