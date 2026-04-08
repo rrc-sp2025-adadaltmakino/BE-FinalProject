@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../../../constants/httpConstants"
-//import * as doctorService from "../services/doctorService";
+import * as appointmentService from "../services/appointmentServices";
 import { Appointment } from "../models/appointmentModel";
 import { successResponse } from "../models/responseModel";
 
@@ -38,7 +38,7 @@ export const getAppointmentById = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { id } = req.params;
+        const id = String(req.params);
         const appointment: Appointment = await appointmentService.getAppointmentById(id);
         res.status(HTTP_STATUS.OK).json(
             successResponse(appointment, "Appointment retrieved successfully")
@@ -85,7 +85,7 @@ export const updateDoctor = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { id }  = req.params;
+        const id = String(req.params);
         const { status, notes } = req.body;
         const updatedData = { status, notes };
 
