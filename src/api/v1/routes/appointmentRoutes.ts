@@ -7,47 +7,47 @@ import * as appointmentController from "../controllers/appointmentController";
 
 const router: Router = express.Router();
 
-
-// GET /appointments — any authenticated user
+// GET /api/v1/appointments — admin and doctor only (patients cannot browse all appointments)
 router.get(
-    "/",
-    authenticate,
-    appointmentController.getAllAppointments
+  '/',
+  authenticate,
+  isAuthorized({ hasRole: ['admin', 'doctor'] }),
+  appointmentController.getAllAppointments
 );
 
-// GET /appointments/:id — any authenticated user
+// GET /api/v1/appointments/:id — admin, doctor, or the patient who owns it (allowSameUser)
 router.get(
-    "/:id",
-    authenticate,
-    validateRequest(appointmentSchemas.getById),
-    appointmentController.getAppointmentById
+  '/:id',
+  authenticate,
+  isAuthorized({ hasRole: ['admin', 'doctor'], allowSameUser: true }),
+  validateRequest(appointmentSchemas.getById),
+  appointmentController.getAppointmentById
 );
 
-// POST /appointments — patient, admin, or doctor can book
+// POST /api/v1/appointments — any authenticated user (patient books their own appointment)
 router.post(
-    "/",
-    authenticate,
-    isAuthorized({ hasRole: ["admin", "doctor", "patient"] }),
-    validateRequest(appointmentSchemas.create),
-    appointmentController.createAppointment
+  '/',
+  authenticate,
+  validateRequest(appointmentSchemas.create),
+  appointmentController.createAppointment
 );
 
-// PUT /appointments/:id — admin or the same user who booked
+// PUT /api/v1/appointments/:id — admin, doctor, or the patient who owns it
 router.put(
-    "/:id",
-    authenticate,
-    isAuthorized({ hasRole: ["admin"], allowSameUser: true }),
-    validateRequest(appointmentSchemas.update),
-    appointmentController.updateAppointment
+  '/:id',
+  authenticate,
+  isAuthorized({ hasRole: ['admin', 'doctor'], allowSameUser: true }),
+  validateRequest(appointmentSchemas.update),
+  appointmentController.updateAppointment
 );
 
-// DELETE /appointments/:id — admin only
+// DELETE /api/v1/appointments/:id — admin only
 router.delete(
-    "/:id",
-    authenticate,
-    isAuthorized({ hasRole: ["admin"] }),
-    validateRequest(appointmentSchemas.getById),
-    appointmentController.deleteAppointment
+  '/:id',
+  authenticate,
+  isAuthorized({ hasRole: ['admin'] }),
+  validateRequest(appointmentSchemas.delete),
+  appointmentController.deleteAppointment
 );
 
 export default router;
