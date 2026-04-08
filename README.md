@@ -45,12 +45,6 @@ all clinic operations
 - PUT /appointments/:id - Update appointment status (doctor, admin)
 - DELETE /appointments/:id - Cancel an appointment (patient, admin)
 
-### Departments
-- GET /departments - Get all departments (public)
-- GET /departments/:id - Get department by ID (public)
-- POST /departments -Create a department (admin)
-- PUT /departments/:id - Update a department (admin)
-- DELETE /departments/:id - Delete a department (admin)
 
 
 ## Roles and Permissions
