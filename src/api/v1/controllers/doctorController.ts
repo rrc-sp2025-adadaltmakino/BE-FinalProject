@@ -38,7 +38,7 @@ export const getDoctorById = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const id  = String(req.params);
+        const id = req.params.id as string;
         const doctor: Doctor = await doctorService.getDoctorById(id);
         res.status(HTTP_STATUS.OK).json(
             successResponse(doctor, "Doctor retrieved successfully")
@@ -84,7 +84,7 @@ export const updateDoctor = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const id  = String(req.params);
+        const id = req.params.id as string;
         const { name, specialty, departmentId, availableDays } = req.body;
         const updatedData = { name, specialty, departmentId, availableDays };
 
@@ -110,7 +110,7 @@ export const deleteDoctor = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const id  = String(req.params);
+        const id = req.params.id as string;
 
         await doctorService.deleteDoctor(id);
         res.status(HTTP_STATUS.OK).json(

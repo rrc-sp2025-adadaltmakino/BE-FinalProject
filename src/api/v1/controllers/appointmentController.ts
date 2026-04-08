@@ -38,7 +38,7 @@ export const getAppointmentById = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const id = String(req.params);
+        const id = req.params.id as string;
         const appointment: Appointment = await appointmentService.getAppointmentById(id);
         res.status(HTTP_STATUS.OK).json(
             successResponse(appointment, "Appointment retrieved successfully")
@@ -60,7 +60,7 @@ export const createAppointment = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { uid } = req.user!
+        const { uid } = res.locals;
         const { doctorId, date, notes } = req.body;
         const appointmentData = { patientId: uid, doctorId, date, notes };
 
@@ -79,13 +79,13 @@ export const createAppointment = async (
  * @param res  - The express Response
  * @param next - The express middleware chaining function
  */
-export const updateDoctor = async (
+export const updateAppointment = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
-        const id = String(req.params);
+        const id = req.params.id as string;
         const { status, notes } = req.body;
         const updatedData = { status, notes };
 
@@ -112,7 +112,7 @@ export const deleteAppointment = async (
 ): Promise<void> => {
     try {
         const { id } = req.params;
-        const { uid, role } = req.user!;
+        const { uid, role } = res.locals;
 
         await appointmentService.deleteAppointment(id, uid, role);
         res.status(HTTP_STATUS.OK).json(
