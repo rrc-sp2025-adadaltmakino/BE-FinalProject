@@ -27,7 +27,7 @@ const mockNext = jest.fn() as NextFunction;
 describe("Doctor Controller", () => {
     beforeEach(() => jest.clearAllMocks());
 
-    // ─── getAllDoctors ─────────────────────────────────────────────────────
+
     describe("getAllDoctors", () => {
         it("should return 200 with doctors list", async () => {
             const doctors = [{ id: "doc-001", name: "Dr. Smith" }];
@@ -52,7 +52,7 @@ describe("Doctor Controller", () => {
         });
     });
 
-    // ─── getDoctorById ────────────────────────────────────────────────────
+
     describe("getDoctorById", () => {
         it("should return 200 with a single doctor", async () => {
             const doctor = { id: "doc-001", name: "Dr. Smith" };
@@ -77,7 +77,7 @@ describe("Doctor Controller", () => {
         });
     });
 
-    // ─── createDoctor ─────────────────────────────────────────────────────
+
     describe("createDoctor", () => {
         it("should return 201 with the created doctor", async () => {
             const newDoctor = { id: "doc-002", name: "Dr. Jones" };
@@ -109,7 +109,7 @@ describe("Doctor Controller", () => {
         });
     });
 
-    // ─── updateDoctor ─────────────────────────────────────────────────────
+
     describe("updateDoctor", () => {
         it("should return 200 with the updated doctor", async () => {
             const updated = { id: "doc-001", name: "Dr. Smith Updated" };
@@ -140,7 +140,7 @@ describe("Doctor Controller", () => {
         });
     });
 
-    // ─── deleteDoctor ─────────────────────────────────────────────────────
+
     describe("deleteDoctor", () => {
         it("should return 200 on successful deletion", async () => {
             (doctorService.deleteDoctor as jest.Mock).mockResolvedValue(undefined);

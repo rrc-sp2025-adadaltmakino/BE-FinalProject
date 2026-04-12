@@ -49,7 +49,7 @@ describe("Firestore Repository", () => {
     (db.batch as jest.Mock).mockReturnValue(mockBatch);
   });
 
-  // ─── runTransaction ────────────────────────────────────────────────────────
+
   describe("runTransaction", () => {
     it("should execute and return the result of the operations callback", async () => {
       const operations = jest.fn().mockResolvedValue("ok");
@@ -78,7 +78,7 @@ describe("Firestore Repository", () => {
     });
   });
 
-  // ─── createDocument ────────────────────────────────────────────────────────
+
   describe("createDocument", () => {
     it("should use add() and return auto-generated ID when no custom ID given", async () => {
       mockCollectionRef.add.mockResolvedValue({ id: "auto-456" });
@@ -114,7 +114,7 @@ describe("Firestore Repository", () => {
     });
   });
 
-  // ─── getDocuments ──────────────────────────────────────────────────────────
+ 
   describe("getDocuments", () => {
     it("should return the full QuerySnapshot", async () => {
       const mockSnapshot = { docs: [{ id: "d1" }, { id: "d2" }] };
@@ -135,7 +135,7 @@ describe("Firestore Repository", () => {
     });
   });
 
-  // ─── getDocumentById ──────────────────────────────────────────────────────
+  
   describe("getDocumentById", () => {
     it("should return DocumentSnapshot when document exists", async () => {
       const mockDoc = {
@@ -170,7 +170,7 @@ describe("Firestore Repository", () => {
     });
   });
 
-  // ─── updateDocument ────────────────────────────────────────────────────────
+  
   describe("updateDocument", () => {
     it("should call doc().update() with correct data", async () => {
       mockDocRef.update.mockResolvedValue(undefined);
@@ -202,7 +202,7 @@ describe("Firestore Repository", () => {
     });
   });
 
-  // ─── deleteDocument ────────────────────────────────────────────────────────
+  
   describe("deleteDocument", () => {
     it("should call docRef.delete() when no transaction provided", async () => {
       mockDocRef.delete.mockResolvedValue(undefined);
@@ -231,7 +231,7 @@ describe("Firestore Repository", () => {
     });
   });
 
-  // ─── deleteDocumentsByFieldValues ──────────────────────────────────────────
+  
   describe("deleteDocumentsByFieldValues", () => {
     const mockDocs = [{ ref: { id: "ref-1" } }, { ref: { id: "ref-2" } }];
     const mockQuerySnapshot = { docs: mockDocs };

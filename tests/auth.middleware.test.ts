@@ -39,7 +39,7 @@ describe("authenticate Middleware", () => {
     mockNext = jest.fn();
   });
 
-  // Everything correct & working Path ───────────────────────────────
+
 
   describe("valid token", () => {
     it("should call next() with no arguments when token is valid", async () => {
@@ -99,7 +99,7 @@ describe("authenticate Middleware", () => {
     });
   });
 
-  // No Token ────────────────────────────────────────────────────────
+
 
   describe("missing token", () => {
     it("should call next(AuthenticationError) when no Authorization header is provided", async () => {
@@ -154,7 +154,7 @@ describe("authenticate Middleware", () => {
     });
   });
 
-  // Invalid / Expired Token ─────────────────────────────────────────
+
 
   describe("invalid token", () => {
     it("should call next(AuthenticationError) with TOKEN_INVALID when verifyIdToken throws", async () => {
@@ -215,7 +215,7 @@ describe("authenticate Middleware", () => {
     });
   });
 
-  // ─── verifyIdToken call integrity ────────────────────────────────────────────
+
 
   describe("token extraction", () => {
     it("should strip the 'Bearer ' prefix and pass only the raw token to verifyIdToken", async () => {

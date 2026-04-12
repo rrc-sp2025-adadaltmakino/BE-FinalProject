@@ -29,7 +29,7 @@ describe("Appointment Service", () => {
     (db.collection as jest.Mock).mockReturnValue(mockDbQuery);
   });
 
-  // ─── createAppointment ─────────────────────────────────────────────────────
+
   describe("createAppointment", () => {
     it("should create an appointment successfully", async () => {
       // Arrange
@@ -88,7 +88,7 @@ describe("Appointment Service", () => {
     });
   });
 
-  // ─── getAppointmentById ────────────────────────────────────────────────────
+
   describe("getAppointmentById", () => {
     it("should return appointment data when found", async () => {
       // Arrange — uses getDocumentById from repository (not db directly)
@@ -124,7 +124,7 @@ describe("Appointment Service", () => {
     });
   });
 
-  // ─── getAllAppointments ────────────────────────────────────────────────────
+  
   describe("getAllAppointments", () => {
     it("should return all appointments for an admin (uses getDocuments)", async () => {
       // Arrange — admin path calls firestoreRepository.getDocuments
@@ -197,7 +197,7 @@ describe("Appointment Service", () => {
     });
   });
 
-  // ─── deleteAppointment ─────────────────────────────────────────────────────
+
   describe("deleteAppointment", () => {
     it("should delete an appointment successfully", async () => {
       // Arrange:

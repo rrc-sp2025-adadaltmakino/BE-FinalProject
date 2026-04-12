@@ -6,7 +6,7 @@ jest.mock("../src/api/v1/repositories/firestoreRepository");
 describe("Doctor Service", () => {
   beforeEach(() => { jest.clearAllMocks(); });
 
-  // ─── createDoctor ───────────────────────────────────────────────────────
+
   describe("createDoctor", () => {
     it("should create a doctor successfully", async () => {
       // Arrange — matches { name, specialty, departmentId, availableDays, uid }
@@ -49,7 +49,7 @@ describe("Doctor Service", () => {
     });
   });
 
-  // ─── getDoctorById ──────────────────────────────────────────────────────
+  
   describe("getDoctorById", () => {
     it("should return doctor data when found", async () => {
       // Arrange
@@ -91,7 +91,7 @@ describe("Doctor Service", () => {
     });
   });
 
-  // ─── getAllDoctors ──────────────────────────────────────────────────────
+ 
   describe("getAllDoctors", () => {
     it("should return all doctors", async () => {
       // Arrange
@@ -142,7 +142,7 @@ describe("Doctor Service", () => {
     });
   });
 
-  // ─── updateDoctor ───────────────────────────────────────────────────────
+
   describe("updateDoctor", () => {
     it("should update a doctor and return the updated data", async () => {
       // Arrange
@@ -200,7 +200,7 @@ describe("Doctor Service", () => {
     });
   });
 
-  // ─── deleteDoctor ───────────────────────────────────────────────────────
+
   describe("deleteDoctor", () => {
     it("should delete a doctor successfully", async () => {
       // Arrange
