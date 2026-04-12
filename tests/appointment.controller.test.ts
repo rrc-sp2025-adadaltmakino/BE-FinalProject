@@ -27,7 +27,7 @@ const mockNext = jest.fn() as NextFunction;
 describe("Appointment Controller", () => {
     beforeEach(() => jest.clearAllMocks());
 
-    // ─── getAllAppointments ────────────────────────────────────────────────
+
     describe("getAllAppointments", () => {
         it("should return 200 with appointments list", async () => {
             const appointments = [{ id: "a1", patientId: "user-001" }];
@@ -55,7 +55,7 @@ describe("Appointment Controller", () => {
         });
     });
 
-    // ─── getAppointmentById ───────────────────────────────────────────────
+
     describe("getAppointmentById", () => {
         it("should return 200 with a single appointment", async () => {
             const appointment = { id: "a1", patientId: "user-001" };
@@ -83,7 +83,7 @@ describe("Appointment Controller", () => {
         });
     });
 
-    // ─── createAppointment ────────────────────────────────────────────────
+
     describe("createAppointment", () => {
         it("should return 201 with the created appointment", async () => {
             const newAppointment = { id: "a2", patientId: "user-001", doctorId: "doc-001" };
@@ -116,7 +116,7 @@ describe("Appointment Controller", () => {
         });
     });
 
-    // ─── updateAppointment ────────────────────────────────────────────────
+
     describe("updateAppointment", () => {
         it("should return 200 with the updated appointment", async () => {
             const updated = { id: "a1", status: "confirmed", notes: "updated" };
@@ -147,7 +147,7 @@ describe("Appointment Controller", () => {
         });
     });
 
-    // ─── deleteAppointment ────────────────────────────────────────────────
+
     describe("deleteAppointment", () => {
         it("should return 200 on successful deletion", async () => {
             (appointmentService.deleteAppointment as jest.Mock).mockResolvedValue(undefined);
