@@ -41,7 +41,7 @@ all clinic operations
 ### Appointments
 - GET /appointments - Get all appointments (admin)
 - GET /appointments/:id - Get appointment by ID (admin, doctor, patient)
-- POST /appointments - Book an appointment (patient)
+- POST /appointments - Book an appointment (patient, admin)
 - PUT /appointments/:id - Update appointment status (doctor, admin)
 - DELETE /appointments/:id - Cancel an appointment (patient, admin)
 

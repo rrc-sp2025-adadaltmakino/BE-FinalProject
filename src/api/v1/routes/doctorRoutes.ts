@@ -22,11 +22,11 @@ router.get(
   doctorController.getDoctorById
 );
 
-// POST /api/v1/doctors — admin only
+// POST /api/v1/doctors — admin, doctor
 router.post(
   '/',
   authenticate,
-  isAuthorized({ hasRole: ['admin'] }),
+  isAuthorized({ hasRole: ['admin', 'doctor'] }),
   validateRequest(doctorSchemas.create),
   doctorController.createDoctor
 );
