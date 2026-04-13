@@ -10,10 +10,6 @@ export const appointmentSchemas = {
         'any.required': 'Doctor ID is required',
         'string.empty': 'Doctor ID cannot be empty',
       }),
-      departmentId: Joi.string().required().messages({
-        'any.required': 'Department ID is required',
-        'string.empty': 'Department ID cannot be empty',
-      }),
       date: Joi.string()
         .isoDate()
         .required()
