@@ -86,7 +86,6 @@ describe("Doctor Controller", () => {
             const body = {
                 name: "Dr. Jones",
                 specialty: "Cardiology",
-                departmentId: "dept-001",
                 availableDays: ["Monday"],
                 uid: "uid-002",
             };
@@ -118,7 +117,6 @@ describe("Doctor Controller", () => {
             const body = {
                 name: "Dr. Smith Updated",
                 specialty: "Neurology",
-                departmentId: "dept-002",
                 availableDays: ["Tuesday"],
             };
             const res = mockRes();
