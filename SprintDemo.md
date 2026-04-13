@@ -1,8 +1,8 @@
-### Sprint Demo Structure
+# Sprint Demo Structure
 
 ## Current Progress 
 
-# What's already built and working:
+### What's already built and working:
 
 - Authentication and Authorization — In Firebase a token-based auth with authenticate middleware
 
@@ -15,7 +15,7 @@
 - Postman working
 
 
-# New Component Highlights — NodeMailer
+### New Component Highlights — NodeMailer
 
 - What it does: Sends email notifications automatically when appointments are booked, confirmed, or cancelled
 
@@ -24,13 +24,13 @@
 - Challenges: Testing email without sending real emails
 
 
-# Next Steps 
+### Next Steps 
 
 - Finish NodeMailer integration for all 3 triggers (book, confirm, cancel)
 
 - Add Swagger/OpenAPI documentation
 
-# To Fix/Improve:
+### To Fix/Improve:
 
 - able to book appointment before current date
 
