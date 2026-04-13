@@ -41,8 +41,6 @@ all clinic operations
 - PUT /appointments/:id - Update appointment status (doctor, admin)
 - DELETE /appointments/:id - Cancel an appointment (patient, admin)
 
-
-
 ## Roles and Permissions
 - Manage all resources: admin
 - View/Update own schedule: doctor | patient
