@@ -9,21 +9,14 @@ export const doctorSchemas = {
         'any.required': 'Doctor name is required',
         'string.empty': 'Doctor name cannot be empty',
       }),
-      specialization: Joi.string().required().messages({
-        'any.required': 'Specialization is required',
-        'string.empty': 'Specialization cannot be empty',
-      }),
-      departmentId: Joi.string().required().messages({
-        'any.required': 'Department ID is required',
-        'string.empty': 'Department ID cannot be empty',
+      specialty: Joi.string().required().messages({
+        'any.required': 'Specialty is required',
+        'string.empty': 'Specialty cannot be empty',
       }),
       email: Joi.string().email().required().messages({
         'any.required': 'Email is required',
         'string.empty': 'Email cannot be empty',
         'string.email': 'Email must be a valid email address',
-      }),
-      phone: Joi.string().optional().messages({
-        'string.empty': 'Phone cannot be empty',
       }),
       available: Joi.boolean().default(true),
     }),
@@ -51,18 +44,12 @@ export const doctorSchemas = {
       name: Joi.string().optional().messages({
         'string.empty': 'Doctor name cannot be empty',
       }),
-      specialization: Joi.string().optional().messages({
-        'string.empty': 'Specialization cannot be empty',
-      }),
-      departmentId: Joi.string().optional().messages({
-        'string.empty': 'Department ID cannot be empty',
+      specialty: Joi.string().optional().messages({
+        'string.empty': 'Specialty cannot be empty',
       }),
       email: Joi.string().email().optional().messages({
         'string.empty': 'Email cannot be empty',
         'string.email': 'Email must be a valid email address',
-      }),
-      phone: Joi.string().optional().messages({
-        'string.empty': 'Phone cannot be empty',
       }),
       available: Joi.boolean().optional(),
     }),

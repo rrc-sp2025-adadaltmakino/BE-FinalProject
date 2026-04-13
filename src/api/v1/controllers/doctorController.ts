@@ -60,8 +60,8 @@ export const createDoctor = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        const { name, specialty, departmentId, availableDays, uid } = req.body;
-        const doctorData = { name, specialty, departmentId, availableDays, uid };
+        const { name, specialty, availableDays, uid } = req.body;
+        const doctorData = { name, specialty, availableDays, uid };
 
         const newDoctor: Doctor = await doctorService.createDoctor(doctorData);
         res.status(HTTP_STATUS.CREATED).json(
@@ -85,8 +85,8 @@ export const updateDoctor = async (
 ): Promise<void> => {
     try {
         const id = req.params.id as string;
-        const { name, specialty, departmentId, availableDays } = req.body;
-        const updatedData = { name, specialty, departmentId, availableDays };
+        const { name, specialty, availableDays } = req.body;
+        const updatedData = { name, specialty, availableDays };
 
         const updatedDoctor: Doctor = await doctorService.updateDoctor(id, updatedData);
 
