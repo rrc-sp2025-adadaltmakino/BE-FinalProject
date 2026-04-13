@@ -193,7 +193,6 @@ describe("Doctor Service", () => {
         doctorService.updateDoctor("ghost-id", {
           name: "Dr. X",
           specialty: "Cardiology",
-          departmentId: "dept-001",
           availableDays: ["Monday"],
         })
       ).rejects.toThrow("not found");
@@ -210,7 +209,6 @@ describe("Doctor Service", () => {
         data: () => ({
           name: "Dr. A",
           specialty: "Cardiology",
-          departmentId: "dept-001",
           availableDays: ["Monday"],
           uid: "uid-001",
         }),

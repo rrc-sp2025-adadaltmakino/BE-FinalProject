@@ -64,7 +64,6 @@ export const getDoctorById = async (id: string): Promise<Doctor> => {
 export const createDoctor = async (doctorData: {
     name: string;
     specialty: string;
-    departmentId: string;
     availableDays: string[];
     uid: string;
 }): Promise<Doctor> => {
@@ -88,7 +87,7 @@ export const createDoctor = async (doctorData: {
  */
 export const updateDoctor = async (
     id: string,
-    doctorData: Pick<Doctor, "name" | "specialty" | "departmentId" | "availableDays">
+    doctorData: Pick<Doctor, "name" | "specialty" | "availableDays">
 ): Promise<Doctor> => {
     try {
         const updateData = { ...doctorData, updatedAt: new Date() };

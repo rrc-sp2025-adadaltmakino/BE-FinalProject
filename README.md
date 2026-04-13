@@ -27,10 +27,6 @@ all clinic operations
 
 ## API Endpoints
 
-### Auth
-- POST /auth/register - Register a new user (public)
-- POST /auth/login - Login and receive token (public)
-
 ### Doctors
 - GET /doctors - Get all doctors (public)
 - GET /doctors/:id - Get a doctor by ID (public)
@@ -67,5 +63,12 @@ NodeMailer will be used for email notifications.
 - `main` — production-ready, polished code only,  "final product" branch
 - `development` — stable ongoing work
 - `feature` — individual features branched from `development`
+
+
+## To Fix/Improve:
+- able to book appointment before current date
+- make ID's more readable?
+-add time in the appointment
+- update appointment require notes? add reason for appointment?
 
 # Author: Amanda Dadalt Makino
