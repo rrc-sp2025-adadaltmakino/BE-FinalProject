@@ -7,11 +7,11 @@ import * as appointmentController from "../controllers/appointmentController";
 
 const router: Router = express.Router();
 
-// GET /api/v1/appointments — admin and doctor only (patients cannot browse all appointments)
+// GET /api/v1/appointments — admin only (patients cannot browse all appointments)
 router.get(
   '/',
   authenticate,
-  isAuthorized({ hasRole: ['admin', 'doctor'] }),
+  isAuthorized({ hasRole: ['admin'] }),
   appointmentController.getAllAppointments
 );
 
@@ -19,7 +19,7 @@ router.get(
 router.get(
   '/:id',
   authenticate,
-  isAuthorized({ hasRole: ['admin', 'doctor'], allowSameUser: true }),
+  isAuthorized({ hasRole: ['admin', 'doctor', 'patient'] }),
   validateRequest(appointmentSchemas.getById),
   appointmentController.getAppointmentById
 );
@@ -28,15 +28,16 @@ router.get(
 router.post(
   '/',
   authenticate,
+  isAuthorized({ hasRole: ['patient'] }),
   validateRequest(appointmentSchemas.create),
   appointmentController.createAppointment
 );
 
-// PUT /api/v1/appointments/:id — admin, doctor, or the patient who owns it
+// PUT /api/v1/appointments/:id — admin, doctor
 router.put(
   '/:id',
   authenticate,
-  isAuthorized({ hasRole: ['admin', 'doctor'], allowSameUser: true }),
+  isAuthorized({ hasRole: ['admin', 'doctor'] }),
   validateRequest(appointmentSchemas.update),
   appointmentController.updateAppointment
 );
@@ -45,7 +46,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate,
-  isAuthorized({ hasRole: ['admin'] }),
+  isAuthorized({ hasRole: ['admin', 'patient'] }),
   validateRequest(appointmentSchemas.delete),
   appointmentController.deleteAppointment
 );
