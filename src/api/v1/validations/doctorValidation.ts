@@ -1,5 +1,7 @@
 import Joi, { ObjectSchema } from 'joi';
 
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
 // Doctor operation schemas organized by request part
 export const doctorSchemas = {
   // POST /doctors - Create new doctor
@@ -13,12 +15,16 @@ export const doctorSchemas = {
         'any.required': 'Specialty is required',
         'string.empty': 'Specialty cannot be empty',
       }),
-      email: Joi.string().email().required().messages({
-        'any.required': 'Email is required',
-        'string.empty': 'Email cannot be empty',
-        'string.email': 'Email must be a valid email address',
+      availableDays: Joi.array()
+        .items(Joi.string().valid(...DAYS))
+        .required()
+        .messages({
+          'any.required': 'Available days are required',
+        }),
+      uid: Joi.string().required().messages({
+        'any.required': 'User ID (uid) is required',
+        'string.empty': 'User ID cannot be empty',
       }),
-      available: Joi.boolean().default(true),
     }),
   },
 
@@ -47,11 +53,9 @@ export const doctorSchemas = {
       specialty: Joi.string().optional().messages({
         'string.empty': 'Specialty cannot be empty',
       }),
-      email: Joi.string().email().optional().messages({
-        'string.empty': 'Email cannot be empty',
-        'string.email': 'Email must be a valid email address',
-      }),
-      available: Joi.boolean().optional(),
+      availableDays: Joi.array()
+        .items(Joi.string().valid(...DAYS))
+        .optional(),
     }),
   },
 
