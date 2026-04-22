@@ -38,7 +38,6 @@ app.use(cors());
 
 app.use(cors(getCorsOptions()));
 
-setupSwagger(app);
 
 /**
  * Health check endpoint that returns server status information
@@ -61,5 +60,6 @@ app.use("/api/v1/appointments", appointmentRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 
+setupSwagger(app);
 
 export default app;
