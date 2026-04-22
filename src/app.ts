@@ -1,4 +1,5 @@
 import express, { Express } from "express";
+import helmet from "helmet";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -8,10 +9,10 @@ import doctorRoutes from "./api/v1/routes/doctorRoutes";
 import appointmentRoutes from './api/v1/routes/appointmentRoutes';
 import userRoutes from './api/v1/routes/userRoutes';
 import adminRoutes from './api/v1/routes/adminRoutes';
+import { getHelmetConfig } from "../config/helmetConfig";
 
 const app: Express = express();
 
-// Interface for health check response - defines the structure of our response object
 interface HealthCheckResponse {
   status: string;
   uptime: number;
@@ -19,10 +20,14 @@ interface HealthCheckResponse {
   version: string;
 }
 
-// Middleware for logging HTTP requests
+
 app.use(morgan("combined"));
 
 app.use(express.json());
+
+app.use(helmet());
+
+app.use(getHelmetConfig());
 
 /**
  * Health check endpoint that returns server status information
