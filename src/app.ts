@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import helmet from "helmet";
+import cors from "cors";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -10,6 +11,7 @@ import appointmentRoutes from './api/v1/routes/appointmentRoutes';
 import userRoutes from './api/v1/routes/userRoutes';
 import adminRoutes from './api/v1/routes/adminRoutes';
 import { getHelmetConfig } from "../config/helmetConfig";
+import getCorsOptions from "../config/corsConfig";
 
 const app: Express = express();
 
@@ -28,6 +30,12 @@ app.use(express.json());
 app.use(helmet());
 
 app.use(getHelmetConfig());
+
+app.use(helmet());
+
+app.use(cors());
+
+app.use(cors(getCorsOptions()));
 
 /**
  * Health check endpoint that returns server status information
