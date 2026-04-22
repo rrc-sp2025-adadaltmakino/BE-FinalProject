@@ -1,4 +1,5 @@
 import express, { Express } from "express";
+import setupSwagger from "../config/swagger";
 import helmet from "helmet";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -36,6 +37,8 @@ app.use(helmet());
 app.use(cors());
 
 app.use(cors(getCorsOptions()));
+
+setupSwagger(app);
 
 /**
  * Health check endpoint that returns server status information
