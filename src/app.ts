@@ -1,4 +1,8 @@
 import express, { Express } from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 import morgan from "morgan";
 import doctorRoutes from "./api/v1/routes/doctorRoutes";
 import appointmentRoutes from './api/v1/routes/appointmentRoutes';
