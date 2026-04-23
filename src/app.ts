@@ -1,13 +1,21 @@
 import express, { Express } from "express";
+import setupSwagger from "../config/swagger";
+import helmet from "helmet";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 import morgan from "morgan";
 import doctorRoutes from "./api/v1/routes/doctorRoutes";
 import appointmentRoutes from './api/v1/routes/appointmentRoutes';
 import userRoutes from './api/v1/routes/userRoutes';
 import adminRoutes from './api/v1/routes/adminRoutes';
+import { getHelmetConfig } from "../config/helmetConfig";
+import getCorsOptions from "../config/corsConfig";
 
 const app: Express = express();
 
-// Interface for health check response - defines the structure of our response object
 interface HealthCheckResponse {
   status: string;
   uptime: number;
@@ -15,10 +23,17 @@ interface HealthCheckResponse {
   version: string;
 }
 
-// Middleware for logging HTTP requests
+
 app.use(morgan("combined"));
 
 app.use(express.json());
+
+app.use(helmet());
+
+app.use(getHelmetConfig());
+
+app.use(cors(getCorsOptions()));
+
 
 /**
  * Health check endpoint that returns server status information
@@ -41,5 +56,6 @@ app.use("/api/v1/appointments", appointmentRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 
+setupSwagger(app);
 
 export default app;
