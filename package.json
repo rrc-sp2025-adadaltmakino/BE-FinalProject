@@ -4,6 +4,7 @@
   "description": "A RESTful API for managing clinic appointments, doctors, and departments.",
   "main": "index.js",
   "scripts": {
+    "dev": "ts-node src/server.ts",
     "start": "ts-node src/server.ts",
     "build": "tsc",
     "test": "jest",
