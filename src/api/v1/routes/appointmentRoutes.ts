@@ -7,7 +7,25 @@ import * as appointmentController from "../controllers/appointmentController";
 
 const router: Router = express.Router();
 
-// GET /api/v1/appointments — admin only (patients cannot browse all appointments)
+/**
+ * @openapi
+ * /appointments:
+ *   get:
+ *     summary: Get all appointments (role-filtered)
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Admins see all appointments. Doctors and patients only see their own.
+ *     responses:
+ *       200:
+ *         description: Appointments successfully retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       401:
+ *         description: Unauthorized
+ */
 router.get(
   '/',
   authenticate,
@@ -15,7 +33,33 @@ router.get(
   appointmentController.getAllAppointments
 );
 
-// GET /api/v1/appointments/:id — admin, doctor, or the patient who owns it (allowSameUser)
+/**
+ * @openapi
+ * /appointments/{id}:
+ *   get:
+ *     summary: Get appointment by ID
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The appointment ID
+ *     responses:
+ *       200:
+ *         description: Appointment retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Appointment'
+ *       404:
+ *         description: Appointment not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.get(
   '/:id',
   authenticate,
@@ -24,7 +68,48 @@ router.get(
   appointmentController.getAppointmentById
 );
 
-// POST /api/v1/appointments — any authenticated user (patient books their own appointment)
+/**
+ * @openapi
+ * /appointments:
+ *   post:
+ *     summary: Book a new appointment (patient only)
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - doctorId
+ *               - date
+ *             properties:
+ *               doctorId:
+ *                 type: string
+ *                 example: doc-001
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2026-05-01T10:00:00Z"
+ *               notes:
+ *                 type: string
+ *                 example: Regular checkup
+ *     responses:
+ *       201:
+ *         description: Appointment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Appointment'
+ *       400:
+ *         description: Validation error or double-booking conflict
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - insufficient role
+ */
 router.post(
   '/',
   authenticate,
@@ -33,7 +118,49 @@ router.post(
   appointmentController.createAppointment
 );
 
-// PUT /api/v1/appointments/:id — admin, doctor
+/**
+ * @openapi
+ * /appointments/{id}:
+ *   put:
+ *     summary: Update an appointment status or notes (doctor or admin)
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The appointment ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, confirmed, cancelled]
+ *                 example: confirmed
+ *               notes:
+ *                 type: string
+ *                 example: Patient needs follow-up
+ *     responses:
+ *       200:
+ *         description: Appointment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Appointment'
+ *       404:
+ *         description: Appointment not found
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - insufficient role
+ */
 router.put(
   '/:id',
   authenticate,
@@ -42,7 +169,31 @@ router.put(
   appointmentController.updateAppointment
 );
 
-// DELETE /api/v1/appointments/:id — admin only
+/**
+ * @openapi
+ * /appointments/{id}:
+ *   delete:
+ *     summary: Cancel an appointment (patient or admin)
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The appointment ID
+ *     responses:
+ *       200:
+ *         description: Appointment successfully deleted
+ *       404:
+ *         description: Appointment not found
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - insufficient role
+ */
 router.delete(
   '/:id',
   authenticate,

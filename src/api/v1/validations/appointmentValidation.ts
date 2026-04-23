@@ -1,6 +1,50 @@
 import Joi, { ObjectSchema } from 'joi';
 
-
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CreateAppointmentBody:
+ *       type: object
+ *       required:
+ *         - doctorId
+ *         - date
+ *         - time
+ *       properties:
+ *         doctorId:
+ *           type: string
+ *           example: doc-001
+ *         date:
+ *           type: string
+ *           format: date
+ *           example: "2026-05-01"
+ *         time:
+ *           type: string
+ *           pattern: '^([0-1]\d|2[0-3]):([0-5]\d)$'
+ *           example: "09:30"
+ *         notes:
+ *           type: string
+ *           example: Regular checkup
+ *
+ *     UpdateAppointmentBody:
+ *       type: object
+ *       properties:
+ *         date:
+ *           type: string
+ *           format: date
+ *           example: "2026-05-01"
+ *         time:
+ *           type: string
+ *           pattern: '^([0-1]\d|2[0-3]):([0-5]\d)$'
+ *           example: "10:00"
+ *         status:
+ *           type: string
+ *           enum: [pending, confirmed, cancelled]
+ *           example: confirmed
+ *         notes:
+ *           type: string
+ *           example: Patient needs follow-up
+ */
 export const appointmentSchemas = {
 
   // POST /appointments - Create new appointment
