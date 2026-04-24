@@ -1,3 +1,9 @@
+jest.mock("../config/firebaseConfig", () => ({
+    db: {},
+    auth: {},
+    adminAuth: {},
+}));
+
 import request from "supertest";
 import { Response } from "supertest";
 import app from "../src/app";
