@@ -48,12 +48,14 @@ const getDoctorName = async (doctorId: string): Promise<string> => {
  */
 const formatDate = (date: Date): string =>
     new Date(date).toLocaleString("en-US", {
+        timeZone: "America/Winnipeg",
         weekday: "long",
         year: "numeric",
         month: "long",
         day: "numeric",
         hour: "numeric",
         minute: "2-digit",
+        timeZoneName: "short",
     });
 
 
@@ -128,26 +130,27 @@ export const createAppointment = async (appointmentData: {
     patientId: string;
     doctorId: string;
     date: Date;
+    time: string;
     notes?: string;
 }): Promise<Appointment> => {
-    // Check for double-booking
-    const conflict = await db
-        .collection(COLLECTION)
-        .where("doctorId", "==", appointmentData.doctorId)
-        .where("date", "==", appointmentData.date)
-        .where("status", "==", "confirmed")
-        .get();
 
-    if (!conflict.empty) {
-        throw new Error("Doctor already has an appointment at this time");
+    // Combine date + time into one Date object
+    const [hours, minutes] = appointmentData.time.split(':').map(Number);
+    const combinedDate = new Date(appointmentData.date);
+    combinedDate.setHours(hours, minutes, 0, 0);
+
+    // Reject if combined datetime is in the past
+    if (combinedDate <= new Date()) {
+        throw new Error('Appointment date and time must be in the future');
     }
 
-    const now = new Date();
+    // Use combinedDate going forward
     const newAppointmentData = {
         ...appointmentData,
+        date: combinedDate,
         status: "pending" as const,
-        createdAt: now,
-        updatedAt: now,
+        createdAt: new Date(),
+        updatedAt: new Date(),
     };
 
     const id = await createDocument<Appointment>(COLLECTION, newAppointmentData);
@@ -244,6 +247,5 @@ export const deleteAppointment = async (id: string): Promise<void> => {
             );
         }
     } catch {
-        // Email failure should not affect the deletion result
     }
 };

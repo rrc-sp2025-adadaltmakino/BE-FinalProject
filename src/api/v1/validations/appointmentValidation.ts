@@ -54,8 +54,9 @@ export const appointmentSchemas = {
         'any.required': 'Doctor ID is required',
         'string.empty': 'Doctor ID cannot be empty',
       }),
-      date: Joi.string()
-        .isoDate()
+      date: Joi.date()
+        .iso()
+        .min('now')
         .required()
         .messages({
           'any.required': 'Appointment date is required',

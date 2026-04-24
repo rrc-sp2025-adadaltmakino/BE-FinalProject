@@ -63,8 +63,8 @@ export const createAppointment = async (
 ): Promise<void> => {
     try {
         const { uid } = res.locals;
-        const { doctorId, date, notes } = req.body;
-        const appointmentData = { patientId: uid, doctorId, date, notes };
+        const { doctorId, date, time, notes } = req.body;
+        const appointmentData = { patientId: uid, doctorId, date, time, notes };
 
         const newAppointment: Appointment = await appointmentService.createAppointment(appointmentData);
         res.status(HTTP_STATUS.CREATED).json(
