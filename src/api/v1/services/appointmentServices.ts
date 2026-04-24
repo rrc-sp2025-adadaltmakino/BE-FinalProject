@@ -1,4 +1,3 @@
-
 import { db, auth } from "../../../../config/firebaseConfig";
 import { QuerySnapshot } from "firebase-admin/firestore";
 import { Appointment } from "../models/appointmentModel";
@@ -11,7 +10,6 @@ import {
 } from "../repositories/firestoreRepository";
 import * as emailService from './emailService';
 
-
 const COLLECTION: string = "appointments";
 
 const generateAppointmentId = async (): Promise<string> => {
@@ -20,11 +18,12 @@ const generateAppointmentId = async (): Promise<string> => {
     return `APT-${String(count).padStart(3, '0')}`;
 };
 
-/**
- * Fetches the patient's email address from Firebase Authentication
- * @param patientId - The Firebase UID of the patient
- * @returns The patient's email address, or null if unavailable
- */
+const toDate = (value: any): Date => {
+    if (value instanceof Date) return value;
+    if (value?.toDate) return value.toDate();
+    return new Date(value);
+};
+
 const getPatientEmail = async (patientId: string): Promise<string | null> => {
     try {
         const userRecord = await auth.getUser(patientId);
@@ -34,12 +33,15 @@ const getPatientEmail = async (patientId: string): Promise<string | null> => {
     }
 };
 
+const getPatientName = async (patientId: string): Promise<string> => {
+    try {
+        const userRecord = await auth.getUser(patientId);
+        return userRecord.displayName ?? userRecord.email ?? "A patient";
+    } catch {
+        return "A patient";
+    }
+};
 
-/**
- * Fetches the doctor's name from the Firestore doctors collection
- * @param doctorId - The Firestore document ID of the doctor
- * @returns The doctor's name, or a fallback string if unavailable
- */
 const getDoctorName = async (doctorId: string): Promise<string> => {
     try {
         const doc = await getDocumentById("doctors", doctorId);
@@ -49,9 +51,18 @@ const getDoctorName = async (doctorId: string): Promise<string> => {
     }
 };
 
-/**
- * Formats a Date into a readable string for email content
- */
+const getDoctorEmail = async (doctorId: string): Promise<string | null> => {
+    try {
+        const doc = await getDocumentById("doctors", doctorId);
+        const uid = doc?.data()?.uid as string;
+        if (!uid) return null;
+        const userRecord = await auth.getUser(uid);
+        return userRecord.email ?? null;
+    } catch {
+        return null;
+    }
+};
+
 const formatDate = (date: Date): string =>
     new Date(date).toLocaleString("en-US", {
         timeZone: "America/Winnipeg",
@@ -65,16 +76,8 @@ const formatDate = (date: Date): string =>
     });
 
 
-
 // Service functions -------------------------------------------------
 
-/**
- * Retrieves all appointments from storage.
- * Admins receive all appointments; doctors and patients only see their own.
- * @param uid - The Firebase UID of the requesting user
- * @param role - The role of the requesting user (admin | doctor | patient)
- * @returns Array of Appointment objects
- */
 export const getAllAppointments = async (
     uid: string,
     role: string
@@ -86,10 +89,7 @@ export const getAllAppointments = async (
             snapshot = await getDocuments(COLLECTION);
         } else {
             const field = role === "doctor" ? "doctorId" : "patientId";
-            snapshot = await db
-                .collection(COLLECTION)
-                .where(field, "==", uid)
-                .get();
+            snapshot = await db.collection(COLLECTION).where(field, "==", uid).get();
         }
 
         return snapshot.docs.map((doc) => {
@@ -105,12 +105,6 @@ export const getAllAppointments = async (
     }
 };
 
-/**
- * Retrieves a single appointment by ID from the database
- * @param id - The ID of the appointment to retrieve
- * @returns The Appointment if found
- * @throws Error if appointment is not found
- */
 export const getAppointmentById = async (id: string): Promise<Appointment> => {
     const doc = await getDocumentById(COLLECTION, id);
 
@@ -126,12 +120,6 @@ export const getAppointmentById = async (id: string): Promise<Appointment> => {
     } as Appointment;
 };
 
-/**
- * Creates a new Appointment and sends a confirmation email to the patient.
- * @param appointmentData - Appointment input data
- * @returns The created Appointment
- * @throws Error if doctor already has a confirmed appointment at the given time
- */
 export const createAppointment = async (appointmentData: {
     patientId: string;
     doctorId: string;
@@ -140,17 +128,13 @@ export const createAppointment = async (appointmentData: {
     notes?: string;
 }): Promise<Appointment> => {
 
-    // Combine date + time into one Date object
-    const [hours, minutes] = appointmentData.time.split(':').map(Number);
     const dateOnly = new Date(appointmentData.date).toISOString().slice(0, 10);
-    const combinedDate = new Date(`${dateOnly}T${appointmentData.time}:00`); 
+    const combinedDate = new Date(`${dateOnly}T${appointmentData.time}:00`);
 
-    // Reject if combined datetime is in the past
     if (combinedDate <= new Date()) {
         throw new Error('Appointment date and time must be in the future');
     }
 
-    // Use combinedDate going forward
     const newAppointmentData = {
         ...appointmentData,
         date: combinedDate,
@@ -162,19 +146,21 @@ export const createAppointment = async (appointmentData: {
     const id = await createDocument<Appointment>(COLLECTION, newAppointmentData, await generateAppointmentId());
     const newAppointment = { id, ...newAppointmentData } as Appointment;
 
-    // Send confirmation email to the patient
     try {
-        const [patientEmail, doctorName] = await Promise.all([
+        const [patientEmail, doctorEmail, doctorName, patientName] = await Promise.all([
             getPatientEmail(appointmentData.patientId),
+            getDoctorEmail(appointmentData.doctorId),
             getDoctorName(appointmentData.doctorId),
+            getPatientName(appointmentData.patientId),
         ]);
 
+        const formattedDate = formatDate(combinedDate);
+
         if (patientEmail) {
-            await emailService.sendAppointmentConfirmation(
-                patientEmail,
-                doctorName,
-                formatDate(combinedDate)
-            );
+            await emailService.sendAppointmentConfirmation(patientEmail, doctorName, formattedDate);
+        }
+        if (doctorEmail) {
+            await emailService.sendDoctorNewAppointmentNotice(doctorEmail, patientName, formattedDate);
         }
     } catch {
     }
@@ -182,13 +168,6 @@ export const createAppointment = async (appointmentData: {
     return newAppointment;
 };
 
-/**
- * Updates an existing appointment and sends a status update email to the patient.
- * @param id - The ID of the appointment to update
- * @param appointmentData - The fields to update (status and/or notes)
- * @returns The updated Appointment
- * @throws Error if appointment is not found
- */
 export const updateAppointment = async (
     id: string,
     appointmentData: Pick<Appointment, "status" | "notes">
@@ -203,53 +182,50 @@ export const updateAppointment = async (
 
     await updateDocument<Appointment>(COLLECTION, id, updatedAppointment);
 
-    // Send update notification only when status actually changed
     if (appointmentData.status !== undefined && appointmentData.status !== previousStatus) {
         try {
-            const [patientEmail, doctorName] = await Promise.all([
+            const [patientEmail, doctorEmail, doctorName, patientName] = await Promise.all([
                 getPatientEmail(appointment.patientId),
+                getDoctorEmail(appointment.doctorId),
                 getDoctorName(appointment.doctorId),
+                getPatientName(appointment.patientId),
             ]);
 
+            const formattedDate = formatDate(toDate(appointment.date));
+
             if (patientEmail) {
-                await emailService.sendAppointmentUpdateNotification(
-                    patientEmail,
-                    doctorName,
-                    formatDate(appointment.date),
-                    updatedAppointment.status
-                );
+                await emailService.sendAppointmentUpdateNotification(patientEmail, doctorName, formattedDate, updatedAppointment.status);
+            }
+            if (doctorEmail) {
+                await emailService.sendDoctorAppointmentUpdate(doctorEmail, patientName, formattedDate, updatedAppointment.status);
             }
         } catch {
-            // Email failure should not block the update from being returned
         }
     }
 
     return structuredClone(updatedAppointment);
 };
 
-/**
- * Deletes an appointment from storage and sends a cancellation notice to the patient.
- * @param id - The ID of the appointment to delete
- * @throws Error if appointment with given ID is not found
- */
 export const deleteAppointment = async (id: string): Promise<void> => {
     const appointment: Appointment = await getAppointmentById(id);
 
     await deleteDocument(COLLECTION, id);
 
-    // Send cancellation notice to the patient
     try {
-        const [patientEmail, doctorName] = await Promise.all([
+        const [patientEmail, doctorEmail, doctorName, patientName] = await Promise.all([
             getPatientEmail(appointment.patientId),
+            getDoctorEmail(appointment.doctorId),
             getDoctorName(appointment.doctorId),
+            getPatientName(appointment.patientId),
         ]);
 
+        const formattedDate = formatDate(toDate(appointment.date));
+
         if (patientEmail) {
-            await emailService.sendCancellationNotice(
-                patientEmail,
-                doctorName,
-                formatDate(appointment.date)
-            );
+            await emailService.sendCancellationNotice(patientEmail, doctorName, formattedDate);
+        }
+        if (doctorEmail) {
+            await emailService.sendDoctorCancellationNotice(doctorEmail, patientName, formattedDate);
         }
     } catch {
     }
