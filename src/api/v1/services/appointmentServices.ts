@@ -14,6 +14,12 @@ import * as emailService from './emailService';
 
 const COLLECTION: string = "appointments";
 
+const generateAppointmentId = async (): Promise<string> => {
+    const snapshot = await db.collection(COLLECTION).get();
+    const count = snapshot.size + 1;
+    return `APT-${String(count).padStart(3, '0')}`;
+};
+
 /**
  * Fetches the patient's email address from Firebase Authentication
  * @param patientId - The Firebase UID of the patient
@@ -153,7 +159,7 @@ export const createAppointment = async (appointmentData: {
         updatedAt: new Date(),
     };
 
-    const id = await createDocument<Appointment>(COLLECTION, newAppointmentData);
+    const id = await createDocument<Appointment>(COLLECTION, newAppointmentData, await generateAppointmentId());
     const newAppointment = { id, ...newAppointmentData } as Appointment;
 
     // Send confirmation email to the patient

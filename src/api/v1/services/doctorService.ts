@@ -1,3 +1,4 @@
+import { db } from "../../../../config/firebaseConfig";
 import { Doctor } from "../models/doctorModel";
 import {
     createDocument,
@@ -9,6 +10,11 @@ import {
 
 const COLLECTION = "doctors";
 
+const generateDoctorId = async (): Promise<string> => {
+    const snapshot = await db.collection(COLLECTION).get();
+    const count = snapshot.size + 1;
+    return `DR-${String(count).padStart(3, '0')}`;
+};
 
 /**
  * Retrieves all doctors from storage
@@ -70,7 +76,7 @@ export const createDoctor = async (doctorData: {
     try {
         const now = new Date();
         const newDoctorData = { ...doctorData, createdAt: now, updatedAt: now };
-        const id = await createDocument<Doctor>(COLLECTION, newDoctorData);
+        const id = await createDocument<Doctor>(COLLECTION, newDoctorData, await generateDoctorId());
         return { id, ...newDoctorData } as Doctor;
     } catch (error) {
         throw error;
