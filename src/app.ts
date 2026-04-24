@@ -2,9 +2,9 @@ import express, { Express } from "express";
 import setupSwagger from "../config/swagger";
 import helmet from "helmet";
 import cors from "cors";
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 
-dotenv.config();
+// dotenv.config();
 
 import morgan from "morgan";
 import doctorRoutes from "./api/v1/routes/doctorRoutes";

@@ -17,7 +17,9 @@ const sendEmail = async (to: string, subject: string, html: string): Promise<voi
     });
 };
 
-// Appointment Booked
+
+// Patient Emails -----------------------------------------------------------
+
 export const sendAppointmentConfirmation = async (
     patientEmail: string,
     doctorName: string,
@@ -32,8 +34,6 @@ export const sendAppointmentConfirmation = async (
     await sendEmail(patientEmail, subject, html);
 };
 
-
-// Appointment Cancelled
 export const sendCancellationNotice = async (
     patientEmail: string,
     doctorName: string,
@@ -48,8 +48,6 @@ export const sendCancellationNotice = async (
     await sendEmail(patientEmail, subject, html);
 };
 
-
-// Doctor Confirms Appointment
 export const sendAppointmentUpdateNotification = async (
     patientEmail: string,
     doctorName: string,
@@ -63,4 +61,49 @@ export const sendAppointmentUpdateNotification = async (
         is now <strong>${status}</strong>.</p>
     `;
     await sendEmail(patientEmail, subject, html);
+};
+
+
+// Doctor Emails ------------------------------------------------------------
+
+export const sendDoctorNewAppointmentNotice = async (
+    doctorEmail: string,
+    patientName: string,
+    date: string
+): Promise<void> => {
+    const subject = "New Appointment Booked";
+    const html = `
+        <h2>You have a new appointment!</h2>
+        <p>Patient <strong>${patientName}</strong> has booked an appointment on <strong>${date}</strong>.</p>
+        <p>Please review your schedule.</p>
+    `;
+    await sendEmail(doctorEmail, subject, html);
+};
+
+export const sendDoctorAppointmentUpdate = async (
+    doctorEmail: string,
+    patientName: string,
+    date: string,
+    status: string
+): Promise<void> => {
+    const subject = "Appointment Status Updated";
+    const html = `
+        <h2>An appointment status has changed.</h2>
+        <p>The appointment with <strong>${patientName}</strong> on <strong>${date}</strong> 
+        is now <strong>${status}</strong>.</p>
+    `;
+    await sendEmail(doctorEmail, subject, html);
+};
+
+export const sendDoctorCancellationNotice = async (
+    doctorEmail: string,
+    patientName: string,
+    date: string
+): Promise<void> => {
+    const subject = "Appointment Cancelled";
+    const html = `
+        <h2>An appointment has been cancelled.</h2>
+        <p>The appointment with <strong>${patientName}</strong> on <strong>${date}</strong> has been cancelled.</p>
+    `;
+    await sendEmail(doctorEmail, subject, html);
 };

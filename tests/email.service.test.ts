@@ -3,8 +3,10 @@ import {
     sendAppointmentConfirmation,
     sendCancellationNotice,
     sendAppointmentUpdateNotification,
+    sendDoctorNewAppointmentNotice,
+    sendDoctorAppointmentUpdate,
+    sendDoctorCancellationNotice,
 } from "../src/api/v1/services/emailService";
-
 
 jest.mock("nodemailer", () => ({
     __esModule: true,
@@ -23,6 +25,8 @@ describe("Email Service", () => {
         mockSendMail.mockClear();
         mockSendMail.mockResolvedValue(undefined);
     });
+
+    // Patient Emails 
 
     describe("sendAppointmentConfirmation", () => {
         it("should call sendMail with correct to, subject, and from", async () => {
@@ -55,7 +59,6 @@ describe("Email Service", () => {
         });
     });
 
-  
     describe("sendCancellationNotice", () => {
         it("should call sendMail with correct to, subject, and from", async () => {
             await sendCancellationNotice("patient@test.com", "Dr. Jones", "2026-05-02");
@@ -87,15 +90,9 @@ describe("Email Service", () => {
         });
     });
 
-    
     describe("sendAppointmentUpdateNotification", () => {
         it("should call sendMail with correct to, subject, and from", async () => {
-            await sendAppointmentUpdateNotification(
-                "patient@test.com",
-                "Dr. Lee",
-                "2026-05-03",
-                "confirmed"
-            );
+            await sendAppointmentUpdateNotification("patient@test.com", "Dr. Lee", "2026-05-03", "confirmed");
 
             expect(mockSendMail).toHaveBeenCalledTimes(1);
             expect(mockSendMail).toHaveBeenCalledWith(
@@ -108,12 +105,7 @@ describe("Email Service", () => {
         });
 
         it("should include doctorName, date, and status in the html body", async () => {
-            await sendAppointmentUpdateNotification(
-                "patient@test.com",
-                "Dr. Lee",
-                "2026-05-03",
-                "confirmed"
-            );
+            await sendAppointmentUpdateNotification("patient@test.com", "Dr. Lee", "2026-05-03", "confirmed");
 
             const { html } = mockSendMail.mock.calls[0][0];
             expect(html).toContain("Dr. Lee");
@@ -122,12 +114,7 @@ describe("Email Service", () => {
         });
 
         it("should reflect a different status in the html body", async () => {
-            await sendAppointmentUpdateNotification(
-                "patient@test.com",
-                "Dr. Lee",
-                "2026-05-03",
-                "cancelled"
-            );
+            await sendAppointmentUpdateNotification("patient@test.com", "Dr. Lee", "2026-05-03", "cancelled");
 
             const { html } = mockSendMail.mock.calls[0][0];
             expect(html).toContain("cancelled");
@@ -137,12 +124,97 @@ describe("Email Service", () => {
             mockSendMail.mockRejectedValue(new Error("SMTP error"));
 
             await expect(
-                sendAppointmentUpdateNotification(
-                    "patient@test.com",
-                    "Dr. Lee",
-                    "2026-05-03",
-                    "confirmed"
-                )
+                sendAppointmentUpdateNotification("patient@test.com", "Dr. Lee", "2026-05-03", "confirmed")
+            ).rejects.toThrow("SMTP error");
+        });
+    });
+
+    // Doctor Emails
+
+    describe("sendDoctorNewAppointmentNotice", () => {
+        it("should send to doctor with correct subject", async () => {
+            await sendDoctorNewAppointmentNotice("doctor@test.com", "John Doe", "2026-05-01");
+
+            expect(mockSendMail).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    to: "doctor@test.com",
+                    subject: "New Appointment Booked",
+                })
+            );
+        });
+
+        it("should include patientName and date in the html body", async () => {
+            await sendDoctorNewAppointmentNotice("doctor@test.com", "John Doe", "2026-05-01");
+
+            const { html } = mockSendMail.mock.calls[0][0];
+            expect(html).toContain("John Doe");
+            expect(html).toContain("2026-05-01");
+        });
+
+        it("should throw if sendMail fails", async () => {
+            mockSendMail.mockRejectedValue(new Error("SMTP error"));
+
+            await expect(
+                sendDoctorNewAppointmentNotice("doctor@test.com", "John Doe", "2026-05-01")
+            ).rejects.toThrow("SMTP error");
+        });
+    });
+
+    describe("sendDoctorAppointmentUpdate", () => {
+        it("should send to doctor with correct subject", async () => {
+            await sendDoctorAppointmentUpdate("doctor@test.com", "John Doe", "2026-05-01", "confirmed");
+
+            expect(mockSendMail).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    to: "doctor@test.com",
+                    subject: "Appointment Status Updated",
+                })
+            );
+        });
+
+        it("should include patientName, date, and status in the html body", async () => {
+            await sendDoctorAppointmentUpdate("doctor@test.com", "John Doe", "2026-05-01", "confirmed");
+
+            const { html } = mockSendMail.mock.calls[0][0];
+            expect(html).toContain("John Doe");
+            expect(html).toContain("2026-05-01");
+            expect(html).toContain("confirmed");
+        });
+
+        it("should throw if sendMail fails", async () => {
+            mockSendMail.mockRejectedValue(new Error("SMTP error"));
+
+            await expect(
+                sendDoctorAppointmentUpdate("doctor@test.com", "John Doe", "2026-05-01", "confirmed")
+            ).rejects.toThrow("SMTP error");
+        });
+    });
+
+    describe("sendDoctorCancellationNotice", () => {
+        it("should send to doctor with correct subject", async () => {
+            await sendDoctorCancellationNotice("doctor@test.com", "John Doe", "2026-05-01");
+
+            expect(mockSendMail).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    to: "doctor@test.com",
+                    subject: "Appointment Cancelled",
+                })
+            );
+        });
+
+        it("should include patientName and date in the html body", async () => {
+            await sendDoctorCancellationNotice("doctor@test.com", "John Doe", "2026-05-01");
+
+            const { html } = mockSendMail.mock.calls[0][0];
+            expect(html).toContain("John Doe");
+            expect(html).toContain("2026-05-01");
+        });
+
+        it("should throw if sendMail fails", async () => {
+            mockSendMail.mockRejectedValue(new Error("SMTP error"));
+
+            await expect(
+                sendDoctorCancellationNotice("doctor@test.com", "John Doe", "2026-05-01")
             ).rejects.toThrow("SMTP error");
         });
     });

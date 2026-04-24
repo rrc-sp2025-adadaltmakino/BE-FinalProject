@@ -1,45 +1,59 @@
 # Clinic Appointment Booking API
  
-A RESTful API for managing clinic appointments, doctors, and departments.
+A RESTful API for managing clinic appointments, doctors, and departments built with 
+Node.js, TypeScript, Express, and Firebase Firestore.
 
-Using: Node.js, TypeScript, Express, and Firebase Firestore.
-
-Patients can book appointments, doctors can manage schedules, and admins can oversee
-all clinic operations
-
+> Patients can book appointments, doctors can manage their schedules, and admins can oversee all clinic operations.
 
 ## Technologies
 
-- Node.js, TypeScript, Express
-- Firebase Firestore and Authentication
-- Jest for testing
-- Swagger/OpenAPI for documentation
-- Joi for validation
-- GitHub for version control and project management
+| Category | Technology |
+|---|---|
+| Runtime & Language | Node.js, TypeScript |
+| Framework | Express |
+| Database & Auth | Firebase Firestore, Firebase Authentication |
+| Email Notifications | NodeMailer |
+| Validation | Joi |
+| Testing | Jest, Supertest |
+| API Documentation | Swagger / OpenAPI |
+| Version Control | GitHub |
 
 
 ## Architecture
-- Routes layer
-- Controllers layer
-- Services layer
-- Repositories layer
+| Layer | Responsibility |
+|---|---|
+| **Routes** | Define API endpoints and attach middleware |
+| **Middleware** | Handle authentication, authorization, and request validation |
+| **Controllers** | Parse requests, call services, return responses |
+| **Services** | Contain core business logic |
+| **Repositories** | Abstract all Firestore database interactions |
+
 
 
 ## API Endpoints
 
 ### Doctors
-- GET /doctors - Get all doctors (public)
-- GET /doctors/:id - Get a doctor by ID (public)
-- POST /doctors - Create a new doctor (admin)
-- PUT /doctors/:id - Update a doctor (admin, doctor)
-- DELETE /doctors/:id - Delete a doctor (admin)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `GET` | `/doctors` | Get all doctors | Public |
+| `GET` | `/doctors/:id` | Get a doctor by ID | Public |
+| `POST` | `/doctors` | Create a new doctor | Admin |
+| `PUT` | `/doctors/:id` | Update a doctor | Admin, Doctor |
+| `DELETE` | `/doctors/:id` | Delete a doctor | Admin |
 
 ### Appointments
-- GET /appointments - Get all appointments (admin)
-- GET /appointments/:id - Get appointment by ID (admin, doctor, patient)
-- POST /appointments - Book an appointment (patient, admin)
-- PUT /appointments/:id - Update appointment status (doctor, admin)
-- DELETE /appointments/:id - Cancel an appointment (patient, admin)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `GET` | `/appointments` | Get all appointments | Admin |
+| `GET` | `/appointments/:id` | Get appointment by ID | Admin, Doctor, Patient |
+| `POST` | `/appointments` | Book an appointment | Admin, Patient |
+| `PUT` | `/appointments/:id` | Update appointment status | Admin, Doctor |
+| `DELETE` | `/appointments/:id` | Cancel an appointment | Admin, Patient |
+
+### Other
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `GET` | `/health` | Server health check | Public |
 
 ## Roles and Permissions
 - Manage all resources: admin
@@ -49,11 +63,13 @@ all clinic operations
 - Cancel own appointments: admin | patients
 
 
-## New component: NodeMailer
-NodeMailer will be used for email notifications.
-- Patient books new appointment (confirmation email)
-- An appointment is cancelled (cancellation notice)
-- Doctor confirms an appointment (update notification)
+## New component: Email Notifications (NodeMailer)
+
+Automated emails are triggered on the following events:
+
+- **Booking Confirmation** — sent to patient when a new appointment is booked
+- **Cancellation Notice** — sent when an appointment is cancelled
+- **Status Update** — sent when a doctor confirms or updates an appointment
 
 
 ## Git Workflow
@@ -62,11 +78,16 @@ NodeMailer will be used for email notifications.
 - `development` — stable ongoing work
 - `feature` — individual features branched from `development`
 
+## API Documentation
+
+Swagger UI available at:
+
+```
+http://localhost:3000/api-docs
+```
 
 ## To Fix/Improve:
-- able to book appointment before current date
-- make ID's more readable?
--add time in the appointment
-- update appointment require notes? add reason for appointment?
+- make patient profile
+- make separate departments for each doctor specialty
 
 # Author: Amanda Dadalt Makino

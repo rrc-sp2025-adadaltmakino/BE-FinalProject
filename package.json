@@ -4,6 +4,7 @@
   "description": "A RESTful API for managing clinic appointments, doctors, and departments.",
   "main": "index.js",
   "scripts": {
+    "dev": "ts-node src/server.ts",
     "start": "ts-node src/server.ts",
     "build": "tsc",
     "test": "jest",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/rrc-sp2025-adadaltmakino/BE-FinalProject#readme",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/cors": "^2.8.19",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
@@ -29,11 +31,13 @@
     "@types/supertest": "^7.2.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "eslint": "^10.2.1",
     "jest": "^30.3.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.59.0"
   },
   "dependencies": {
     "@types/express": "^5.0.6",
