@@ -18,10 +18,10 @@ const generateAppointmentId = async (): Promise<string> => {
     return `APT-${String(count).padStart(3, '0')}`;
 };
 
-const toDate = (value: any): Date => {
+const toDate = (value: Date | { toDate: () => Date } | string | number): Date => {
     if (value instanceof Date) return value;
-    if (value?.toDate) return value.toDate();
-    return new Date(value);
+    if (value && typeof value === 'object' && 'toDate' in value) return value.toDate();
+    return new Date(value as string | number);
 };
 
 const getPatientEmail = async (patientId: string): Promise<string | null> => {
@@ -82,27 +82,23 @@ export const getAllAppointments = async (
     uid: string,
     role: string
 ): Promise<Appointment[]> => {
-    try {
-        let snapshot: QuerySnapshot;
+    let snapshot: QuerySnapshot;
 
-        if (role === "admin") {
-            snapshot = await getDocuments(COLLECTION);
-        } else {
-            const field = role === "doctor" ? "doctorId" : "patientId";
-            snapshot = await db.collection(COLLECTION).where(field, "==", uid).get();
-        }
-
-        return snapshot.docs.map((doc) => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                ...data,
-                createdAt: data.createdAt?.toDate?.() ?? data.createdAt,
-            } as Appointment;
-        });
-    } catch (error: unknown) {
-        throw error;
+    if (role === "admin") {
+        snapshot = await getDocuments(COLLECTION);
+    } else {
+        const field = role === "doctor" ? "doctorId" : "patientId";
+        snapshot = await db.collection(COLLECTION).where(field, "==", uid).get();
     }
+
+    return snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate?.() ?? data.createdAt,
+        } as Appointment;
+    });
 };
 
 export const getAppointmentById = async (id: string): Promise<Appointment> => {
