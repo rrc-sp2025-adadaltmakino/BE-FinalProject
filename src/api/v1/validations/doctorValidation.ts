@@ -1,4 +1,4 @@
-import Joi, { ObjectSchema } from 'joi';
+import Joi from 'joi';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
