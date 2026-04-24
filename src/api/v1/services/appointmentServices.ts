@@ -142,8 +142,8 @@ export const createAppointment = async (appointmentData: {
 
     // Combine date + time into one Date object
     const [hours, minutes] = appointmentData.time.split(':').map(Number);
-    const combinedDate = new Date(appointmentData.date);
-    combinedDate.setHours(hours, minutes, 0, 0);
+    const dateOnly = new Date(appointmentData.date).toISOString().slice(0, 10);
+    const combinedDate = new Date(`${dateOnly}T${appointmentData.time}:00`); 
 
     // Reject if combined datetime is in the past
     if (combinedDate <= new Date()) {
@@ -173,11 +173,10 @@ export const createAppointment = async (appointmentData: {
             await emailService.sendAppointmentConfirmation(
                 patientEmail,
                 doctorName,
-                formatDate(appointmentData.date)
+                formatDate(combinedDate)
             );
         }
     } catch {
-        // Email failure should not block appointment creation
     }
 
     return newAppointment;

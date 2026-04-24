@@ -113,7 +113,7 @@ router.get(
 router.post(
   '/',
   authenticate,
-  isAuthorized({ hasRole: ['patient'] }),
+  isAuthorized({ hasRole: ['admin', 'patient'] }),
   validateRequest(appointmentSchemas.create),
   appointmentController.createAppointment
 );
