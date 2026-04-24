@@ -9,6 +9,10 @@ import {
 } from "../src/api/v1/controllers/appointmentController";
 
 jest.mock("../src/api/v1/services/appointmentServices");
+jest.mock("../config/firebaseConfig", () => ({ 
+    db: { collection: jest.fn() },
+    auth: { getUser: jest.fn() },
+}));
 
 const mockReq = (params = {}, body = {}) =>
     ({ params, body } as unknown as Request);
@@ -27,7 +31,6 @@ const mockNext = jest.fn() as NextFunction;
 describe("Appointment Controller", () => {
     beforeEach(() => jest.clearAllMocks());
 
-
     describe("getAllAppointments", () => {
         it("should return 200 with appointments list", async () => {
             const appointments = [{ id: "a1", patientId: "user-001" }];
@@ -40,9 +43,7 @@ describe("Appointment Controller", () => {
 
             expect(appointmentService.getAllAppointments).toHaveBeenCalledWith("user-001", "patient");
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: appointments })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: appointments }));
         });
 
         it("should call next(error) on failure", async () => {
@@ -54,7 +55,6 @@ describe("Appointment Controller", () => {
             expect(mockNext).toHaveBeenCalledWith(error);
         });
     });
-
 
     describe("getAppointmentById", () => {
         it("should return 200 with a single appointment", async () => {
@@ -68,9 +68,7 @@ describe("Appointment Controller", () => {
 
             expect(appointmentService.getAppointmentById).toHaveBeenCalledWith("a1");
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: appointment })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: appointment }));
         });
 
         it("should call next(error) on failure", async () => {
@@ -83,14 +81,13 @@ describe("Appointment Controller", () => {
         });
     });
 
-
     describe("createAppointment", () => {
-        it("should return 201 with the created appointment", async () => {
+        it("should use token UID as patientId when role is patient", async () => {
             const newAppointment = { id: "a2", patientId: "user-001", doctorId: "doc-001" };
             (appointmentService.createAppointment as jest.Mock).mockResolvedValue(newAppointment);
 
-            const req = mockReq({}, { doctorId: "doc-001", date: "2026-05-01", notes: "checkup" });
-            const res = mockRes();
+            const req = mockReq({}, { doctorId: "doc-001", date: "2026-05-01", time: "10:00", notes: "checkup" });
+            const res = mockRes("user-001", "patient");
 
             await createAppointment(req, res, mockNext);
 
@@ -98,24 +95,60 @@ describe("Appointment Controller", () => {
                 patientId: "user-001",
                 doctorId: "doc-001",
                 date: "2026-05-01",
+                time: "10:00",
                 notes: "checkup",
             });
             expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: newAppointment })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: newAppointment }));
         });
 
-        it("should call next(error) on failure", async () => {
+        it("should use body patientId when role is admin", async () => {
+            const newAppointment = { id: "a3", patientId: "patient-999", doctorId: "doc-001" };
+            (appointmentService.createAppointment as jest.Mock).mockResolvedValue(newAppointment);
+
+            const req = mockReq({}, {
+                patientId: "patient-999",
+                doctorId: "doc-001",
+                date: "2026-05-01",
+                time: "11:00",
+            });
+            const res = mockRes("admin-001", "admin");
+
+            await createAppointment(req, res, mockNext);
+
+            expect(appointmentService.createAppointment).toHaveBeenCalledWith({
+                patientId: "patient-999",
+                doctorId: "doc-001",
+                date: "2026-05-01",
+                time: "11:00",
+                notes: undefined,
+            });
+            expect(res.status).toHaveBeenCalledWith(201);
+        });
+
+        it("should return 400 when admin does not provide patientId", async () => {
+            const req = mockReq({}, { doctorId: "doc-001", date: "2026-05-01", time: "10:00" });
+            const res = mockRes("admin-001", "admin");
+
+            await createAppointment(req, res, mockNext);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({ message: "Admin must provide patientId in the request body" })
+            );
+            expect(appointmentService.createAppointment).not.toHaveBeenCalled();
+        });
+
+        it("should call next(error) on service failure", async () => {
             const error = new Error("Create failed");
             (appointmentService.createAppointment as jest.Mock).mockRejectedValue(error);
 
-            await createAppointment(mockReq({}, {}), mockRes(), mockNext);
+            const req = mockReq({}, { doctorId: "doc-001", date: "2026-05-01", time: "10:00" });
+            await createAppointment(req, mockRes("user-001", "patient"), mockNext);
 
             expect(mockNext).toHaveBeenCalledWith(error);
         });
     });
-
 
     describe("updateAppointment", () => {
         it("should return 200 with the updated appointment", async () => {
@@ -132,9 +165,7 @@ describe("Appointment Controller", () => {
                 notes: "updated",
             });
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: updated })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: updated }));
         });
 
         it("should call next(error) on failure", async () => {
@@ -147,7 +178,6 @@ describe("Appointment Controller", () => {
         });
     });
 
-
     describe("deleteAppointment", () => {
         it("should return 200 on successful deletion", async () => {
             (appointmentService.deleteAppointment as jest.Mock).mockResolvedValue(undefined);
@@ -159,9 +189,7 @@ describe("Appointment Controller", () => {
 
             expect(appointmentService.deleteAppointment).toHaveBeenCalledWith("a1");
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: {} })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: {} }));
         });
 
         it("should call next(error) on failure", async () => {

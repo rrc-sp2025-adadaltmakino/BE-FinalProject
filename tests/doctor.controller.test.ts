@@ -9,6 +9,10 @@ import {
 } from "../src/api/v1/controllers/doctorController";
 
 jest.mock("../src/api/v1/services/doctorService");
+jest.mock("../config/firebaseConfig", () => ({
+    db: { collection: jest.fn() },
+    auth: { getUser: jest.fn() },
+}));
 
 const mockReq = (params = {}, body = {}) =>
     ({ params, body } as unknown as Request);
@@ -27,7 +31,6 @@ const mockNext = jest.fn() as NextFunction;
 describe("Doctor Controller", () => {
     beforeEach(() => jest.clearAllMocks());
 
-
     describe("getAllDoctors", () => {
         it("should return 200 with doctors list", async () => {
             const doctors = [{ id: "doc-001", name: "Dr. Smith" }];
@@ -38,9 +41,7 @@ describe("Doctor Controller", () => {
 
             expect(doctorService.getAllDoctors).toHaveBeenCalled();
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: doctors })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: doctors }));
         });
 
         it("should call next(error) on failure", async () => {
@@ -52,7 +53,6 @@ describe("Doctor Controller", () => {
         });
     });
 
-
     describe("getDoctorById", () => {
         it("should return 200 with a single doctor", async () => {
             const doctor = { id: "doc-001", name: "Dr. Smith" };
@@ -63,9 +63,7 @@ describe("Doctor Controller", () => {
 
             expect(doctorService.getDoctorById).toHaveBeenCalledWith("doc-001");
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: doctor })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: doctor }));
         });
 
         it("should call next(error) on failure", async () => {
@@ -76,7 +74,6 @@ describe("Doctor Controller", () => {
             expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
         });
     });
-
 
     describe("createDoctor", () => {
         it("should return 201 with the created doctor", async () => {
@@ -94,9 +91,7 @@ describe("Doctor Controller", () => {
 
             expect(doctorService.createDoctor).toHaveBeenCalledWith(body);
             expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: newDoctor })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: newDoctor }));
         });
 
         it("should call next(error) on failure", async () => {
@@ -107,7 +102,6 @@ describe("Doctor Controller", () => {
             expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
         });
     });
-
 
     describe("updateDoctor", () => {
         it("should return 200 with the updated doctor", async () => {
@@ -124,9 +118,7 @@ describe("Doctor Controller", () => {
 
             expect(doctorService.updateDoctor).toHaveBeenCalledWith("doc-001", body);
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: updated })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: updated }));
         });
 
         it("should call next(error) on failure", async () => {
@@ -138,7 +130,6 @@ describe("Doctor Controller", () => {
         });
     });
 
-
     describe("deleteDoctor", () => {
         it("should return 200 on successful deletion", async () => {
             (doctorService.deleteDoctor as jest.Mock).mockResolvedValue(undefined);
@@ -148,9 +139,7 @@ describe("Doctor Controller", () => {
 
             expect(doctorService.deleteDoctor).toHaveBeenCalledWith("doc-001");
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ data: {} })
-            );
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: {} }));
         });
 
         it("should call next(error) on failure", async () => {
