@@ -11,6 +11,9 @@ import Joi, { ObjectSchema } from 'joi';
  *         - date
  *         - time
  *       properties:
+ *         patientId:
+ *           type: string
+ *           example: firebase-uid-of-patient
  *         doctorId:
  *           type: string
  *           example: doc-001
@@ -50,6 +53,9 @@ export const appointmentSchemas = {
   // POST /appointments - Create new appointment
   create: {
     body: Joi.object({
+      patientId: Joi.string().optional().messages({ 
+        'string.empty': 'Patient ID cannot be empty',
+      }),
       doctorId: Joi.string().required().messages({
         'any.required': 'Doctor ID is required',
         'string.empty': 'Doctor ID cannot be empty',
